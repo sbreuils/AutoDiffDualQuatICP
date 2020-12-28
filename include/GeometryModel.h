@@ -5,6 +5,8 @@
 
 
 #include <vector>
+#include "DualQuaternion.h"
+#include <random>
 
 using namespace std;
 using namespace cv;
@@ -66,8 +68,8 @@ public:
         for(unsigned int j=0 ; j<planarNumberOfWeights ; ++j){
 
             // Quaternion rotCurr = Quaternion(-sin(M_PI*i/(len*2.0))*sin(M_PI*j/len),cos(M_PI*i/(len*2.0))*sin(M_PI*j/len),sin(M_PI*i/(len*2.0))*cos(M_PI*j/len),cos(M_PI*i/(len*2.0))*cos(M_PI*j/len));
-            Quaternion rotCurr = QuaternionScalar<double>(-sin(M_PI*i/(planarNumberOfWeights*2.0))*sin(M_PI*j/planarNumberOfWeights),cos(M_PI*i/(planarNumberOfWeights*2.0))*sin(M_PI*j/planarNumberOfWeights),sin(M_PI*i/(planarNumberOfWeights*2.0))*cos(M_PI*j/planarNumberOfWeights),cos(M_PI*i/(planarNumberOfWeights*2.0))*cos(M_PI*j/planarNumberOfWeights));
-            DualQuaternion curr = DualQuaternionScalar<double>(rotCurr,make_Scalar3<double>(0.1,0.1,0.05));
+            QuaternionScalar<double> rotCurr = QuaternionScalar<double>(-sin(M_PI*i/(planarNumberOfWeights*2.0))*sin(M_PI*j/planarNumberOfWeights),cos(M_PI*i/(planarNumberOfWeights*2.0))*sin(M_PI*j/planarNumberOfWeights),sin(M_PI*i/(planarNumberOfWeights*2.0))*cos(M_PI*j/planarNumberOfWeights),cos(M_PI*i/(planarNumberOfWeights*2.0))*cos(M_PI*j/planarNumberOfWeights));
+            DualQuaternionScalar<double> curr = DualQuaternionScalar<double>(rotCurr,make_Scalar3<double>(0.1,0.1,0.05));
 
             _Warp.push_back(curr);
 
@@ -82,10 +84,10 @@ public:
         for(unsigned int j=0 ; j<planarNumberOfVertices ; ++j){
 
             // Quaternion rotCurr = Quaternion(-sin(M_PI*i/(len*2.0))*sin(M_PI*j/len),cos(M_PI*i/(len*2.0))*sin(M_PI*j/len),sin(M_PI*i/(len*2.0))*cos(M_PI*j/len),cos(M_PI*i/(len*2.0))*cos(M_PI*j/len));
-            QuaternionScalar<double> rotCurr = Quaternion(-sin(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),sin(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices));
-            DualQuaternionScalar<double> curr = DualQuaternion(rotCurr,make_float3(0.1f,0.1f,0.05f));
+            QuaternionScalar<double> rotCurr = QuaternionScalar<double>(-sin(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),sin(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices));
+            DualQuaternionScalar<double> curr = DualQuaternionScalar<double>(rotCurr,make_Scalar3<double>(0.1f,0.1f,0.05f));
             // apply the transformation to the point (0,0,radius)
-            DualQuaternionScalar<double> vertexInput = DualQuaternion(make_float3(0.0f,0.0f,0.0f),Quaternion(radiusSphere,0.0f,0.0f,0.0f));
+            DualQuaternionScalar<double> vertexInput = DualQuaternionScalar<double>(make_Scalar3<double>(0.0f,0.0f,0.0f),QuaternionScalar<double>(radiusSphere,0.0f,0.0f,0.0f));
 
             // apply the transformation 
             vertexInput = curr * vertexInput * curr.DualConjugate2();
@@ -95,16 +97,16 @@ public:
                 float minDistance = 1000.0; 
                 int minCurrIndices = 0;
                 for(unsigned int idxWarp=0 ; idxWarp<_Warp.size() ; ++idxWarp){
-                    DualQuaternion curr = _Warp[idxWarp];
+                    DualQuaternionScalar<double> curr = _Warp[idxWarp];
 
                     // compute the transformed position that is, the associated position
-                    DualQuaternion nodeInput = DualQuaternionScalar<double>(make_Scalar3<double>(0.0,0.0,0.0),QuaternionScalar<double>(radiusSphere,0.0,0.0,0.0));
+                    DualQuaternionScalar<double> nodeInput = DualQuaternionScalar<double>(make_Scalar3<double>(0.0,0.0,0.0),QuaternionScalar<double>(radiusSphere,0.0,0.0,0.0));
                     // apply the transformation 
                     nodeInput = curr * nodeInput * curr.DualConjugate2();
 
                     // compute the distance between the transformed vertex and the transformed node
-                    float3 currentnodePos = nodeInput.Dual().Vector();
-                    float3 currentVertexPos = vertexInput.Dual().Vector();
+                    Scalar3<double> currentnodePos = nodeInput.Dual().Vector();
+                    Scalar3<double> currentVertexPos = vertexInput.Dual().Vector();
 
                     float currentDistance = sqrtf((currentnodePos.x-currentVertexPos.x)*(currentnodePos.x-currentVertexPos.x) + 
                                                   (currentnodePos.y-currentVertexPos.y)*(currentnodePos.y-currentVertexPos.y) +
@@ -146,11 +148,11 @@ public:
         for(unsigned int j=0 ; j<planarNumberOfVertices ; ++j){
 
             // Quaternion rotCurr = Quaternion(-sin(M_PI*i/(len*2.0))*sin(M_PI*j/len),cos(M_PI*i/(len*2.0))*sin(M_PI*j/len),sin(M_PI*i/(len*2.0))*cos(M_PI*j/len),cos(M_PI*i/(len*2.0))*cos(M_PI*j/len));
-            Quaternion rotCurr = QuaternionScalar<double>(-sin(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),sin(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices));
-            DualQuaternion curr = DualQuaternionScalar<double>(rotCurr,make_float3(0.1f,0.1f,0.05f));
+            QuaternionScalar<double> rotCurr = QuaternionScalar<double>(-sin(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),sin(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices));
+            DualQuaternionScalar<double> curr = DualQuaternionScalar<double>(rotCurr,make_Scalar3<double>(0.1f,0.1f,0.05f));
 
             // apply the transformation to the point (0,0,radius)
-            DualQuaternion vertexInput = DualQuaternionScalar<double>(make_Scalar3<double>(0.0f,0.0f,0.0f),QuaternionScalar<double>(radiusSphere,0.0f,0.0f,0.0f));
+            DualQuaternionScalar<double> vertexInput = DualQuaternionScalar<double>(make_Scalar3<double>(0.0f,0.0f,0.0f),QuaternionScalar<double>(radiusSphere,0.0f,0.0f,0.0f));
 
             // apply the transformation 
             vertexInput = curr * vertexInput * curr.DualConjugate2();

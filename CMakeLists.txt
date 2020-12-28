@@ -34,7 +34,7 @@ add_executable(dualQuatIcpAuto
 )
 
 target_link_libraries(dualQuatIcpAuto
-    ${ALL_LIBS}
+    ${OpenCV_LIBS}
 )
 
 

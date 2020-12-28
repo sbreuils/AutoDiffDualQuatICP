@@ -1,6 +1,7 @@
 // #include "include/Utilities.h"
 #include "include/DualQuaternion.h"
 #include "include/CeresFunctors.h"
+#include "include/GeometryModel.h"
 
 //using namespace glm;
 using namespace std;
@@ -42,8 +43,8 @@ int main( int argc, char **argv )
     for(unsigned int i=0 ; i< nodeParameters.size() ; ++i){
         DualQuaternionScalar<double> currParameters = nodeParameters[i];
 
-        Scalar3 thetaEul = logOfQuaternion(currParameters.Real());
-        Scalar3 trans = currParameters.GetTranslation();
+        Scalar3<double> thetaEul = logOfQuaternion(currParameters.Real());
+        Scalar3<double> trans = currParameters.GetTranslation();
 
         x.push_back(thetaEul.x);
         x.push_back(thetaEul.y);
@@ -120,7 +121,7 @@ int main( int argc, char **argv )
     std::cout << "x6 : " << (initial_x[14]) << " -> " << x[14] << "\n";
     std::cout << "x7 : " << (initial_x[15]) << " -> " << x[15] << "\n";
 
-    Eigen::VectorXf residuWithourPerturbation(scene.NBVertices());
+    Eigen::VectorXd residuWithourPerturbation(scene.NBVertices());
     std::cout << "before computing RMSE" << std::endl;
     float totalErrorBefore = scene.RMSE_with_update(residuWithourPerturbation);
 
@@ -138,21 +139,21 @@ int main( int argc, char **argv )
     vector<Point3f> resultVertex3d;
     vector<Point3f> tildeVertex3d;
     
-    float3 vtx;
-    float3 nmle;
+    Scalar3<double> vtx;
+    Scalar3<double> nmle;
 
     vector<double> errorResult;
     double totalError = 0.0;
 
     QuaternionScalar<double> pointN = QuaternionScalar<double>(0., 0., 0., 0.);
 
-    // VERSION WITH BLENDING
+    // version with blending
     for(unsigned int idx=0 ; idx< scene.NBVertices(); ++idx){
         int indx_Depth = idx;
 
-        DualQuaternion point = DualQuaternionScalar<double>(QuaternionScalar<double>(0.0,0.0,0.0,1.0), QuaternionScalar<double>(scene.Vertices()[3*(idx)], scene.Vertices()[3*(idx)+1], scene.Vertices()[3*(idx)+2], 0.0f));
+        DualQuaternionScalar<double> point = DualQuaternionScalar<double>(QuaternionScalar<double>(0.0,0.0,0.0,1.0), QuaternionScalar<double>(scene.Vertices()[3*(idx)], scene.Vertices()[3*(idx)+1], scene.Vertices()[3*(idx)+2], 0.0f));
 
-        DualQuaternion Transfo = DualQuaternionScalar<double>(QuaternionScalar<double>(0.0,0.0,0.0,0.0), QuaternionScalar<double>(0.0,0.0,0.0,0.0));
+        DualQuaternionScalar<double> Transfo = DualQuaternionScalar<double>(QuaternionScalar<double>(0.0,0.0,0.0,0.0), QuaternionScalar<double>(0.0,0.0,0.0,0.0));
         for(int v= 0; v<5; ++v){
             Transfo = Transfo +  resulting_Warps[scene.Indices()[5*(idx)+v]]*scene.Weights()[5*(idx)+v];
         }
@@ -161,7 +162,7 @@ int main( int argc, char **argv )
         point  = Transfo * point * Transfo.DualConjugate2();
         vtx = point.Dual().Vector();
 
-        pointN = Quaternion(scene.Normales()[3*(idx)], scene.Normales()[3*(idx)+1], scene.Normales()[3*(idx)+2], 0.0f);
+        pointN = QuaternionScalar<double>(scene.Normales()[3*(idx)], scene.Normales()[3*(idx)+1], scene.Normales()[3*(idx)+2], 0.0f);
         pointN  = Transfo.Real() * pointN * Transfo.Real().Conjugate();
         nmle = pointN.Vector();
 

@@ -318,7 +318,7 @@ static Scalar3<Scalar> logOfQuaternion(QuaternionScalar<Scalar> qi){
 
   if (sin_squared_theta > (Scalar)(0.0f)) {
   	const Scalar sin_theta = sqrt(sin_squared_theta);
-  	const Scalar cos_theta = qi.Scalar();
+  	const Scalar cos_theta = qi.W();
 
     const Scalar two_theta =
         (Scalar)2.0f * ((cos_theta < (0.0)) ? atan2(-sin_theta, -cos_theta)
@@ -363,7 +363,7 @@ struct DualQuaternionScalar {
     
     DualQuaternionScalar(Scalar3<Scalar> r, Scalar3<Scalar> t) {
         m_real = QuaternionScalar<Scalar>(r);
-        m_dual = (QuaternionScalar<Scalar>(t,0.0) * m_real) * 0.5;
+        m_dual = (QuaternionScalar<Scalar>(t,(Scalar)0.0) * m_real) * (Scalar)0.5;
     }
     
     DualQuaternionScalar(Eigen::Matrix4f transfo) {
