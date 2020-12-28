@@ -17,7 +17,7 @@ using ceres::Problem;
 using ceres::Solve;
 using ceres::Solver;
 
-GeometryModel OuterShell;
+GeometryModel scene;
 
 
 
@@ -34,16 +34,16 @@ int main( int argc, char **argv )
 
 
     std::cout << "rigid body parameters" << std::endl;
-    std::vector<DualQuaternion> nodeParameters =  OuterShell.Warp();
+    std::vector<DualQuaternionScalar<double> > nodeParameters =  scene.Warp();
 
     std::vector<double> x;
 
 
     for(unsigned int i=0 ; i< nodeParameters.size() ; ++i){
-        DualQuaternion currParameters = nodeParameters[i];
+        DualQuaternionScalar<double> currParameters = nodeParameters[i];
 
-        float3 thetaEul = logOfQuaternion(currParameters.Real());
-        float3 trans = currParameters.GetTranslation();
+        Scalar3 thetaEul = logOfQuaternion(currParameters.Real());
+        Scalar3 trans = currParameters.GetTranslation();
 
         x.push_back(thetaEul.x);
         x.push_back(thetaEul.y);
@@ -63,125 +63,7 @@ int main( int argc, char **argv )
 
     Problem problem;
 
-    // OK , it works
-    // CostFunction* cost_function =
-    //       new NumericDiffCostFunction<NumericDiffCostFunctor, ceres::CENTRAL, 1, 1>(
-    //       new NumericDiffCostFunctor);
-    // problem.AddResidualBlock(cost_function, nullptr, &x);
-
-    // Ok it works
-    // with Numerical differentiation, 21 parameters and input
-    // CostFunction* cost_function =
-    //       new NumericDiffCostFunction<NumericDiffCostSeveralVariablesFunctor, ceres::CENTRAL, 21, 21>(
-    //       new NumericDiffCostSeveralVariablesFunctor);
-    // problem.AddResidualBlock(cost_function, nullptr, &x[0]);
-
-
-    // // with Auto differentiation, 21 parameters and input NOT OK
-    // CostFunction* cost_function =
-    //       new AutoDiffCostFunction<NumericDiffCostSeveralVariablesFunctor, 8, 8>(
-    //       new NumericDiffCostSeveralVariablesFunctor);
-    // problem.AddResidualBlock(cost_function, nullptr, &x[0]);
-
-
-    // with Numeric differentiation, 8 parameters and input
-    // CostFunction* cost_function =
-    //       new NumericDiffCostFunction<NumericDiffCostSeveralVariablesFunctorDualQuat,ceres::CENTRAL, 8, 8>(
-    //       new NumericDiffCostSeveralVariablesFunctorDualQuat);
-    // problem.AddResidualBlock(cost_function, nullptr, &x[0]);
-
-    // Scalar4<double> testScal;
-    // Scalar4<double> testScal2;
-    // Scalar4<double> result;
-    // testScal.x = 3.2;
-    // testScal.y = 2.2;
-    // testScal.z = 5.2;
-    // testScal.w = -4.2;
-
-    // testScal2.x = 8.1;
-    // testScal2.y = 2.3;
-    // testScal2.z = 4.9;
-    // testScal2.w = 14.9;
-
-    // result = testScal2 + testScal;
-
-    // std::cout << "result double4 ="<<result.x << ", "<<result.y << ", "<<result.z <<", "<<result.w << ". " << std::endl;
-
-
-    // QuaternionScalar<double> rotation = QuaternionScalar<double>(0.0,0.0,0.0,1.0);
-    // rotation.value.w = cos(3.14159/2.0);
-    // rotation.value.z = sin(3.14159/2.0);
-
-    // rotation.Print();
-    
-
-    // DualQuaternionScalar<double> Transfor = DualQuaternionScalar<double>(rotation,QuaternionScalar<double>(2.0,2.0,0.0,0.0));
-    // DualQuaternionScalar<double> pointdd = DualQuaternionScalar<double>(QuaternionScalar<double>(0.0,0.0,0.0,1.0),QuaternionScalar<double>(1.0,0.0,0.0,0.0));
-
-    // DualQuaternionScalar<double> resultDQ = Transfor*pointdd*(Transfor.DualConjugate2());
-
-    // std::cout << "result dual quaternion ="<<std::endl;
-    // resultDQ.Print();
-
-    // Eigen::Matrix<double, 3, 3>  outerProd = outer_prod_tri_order(testScal, testScal2);
-
-    // std::cout << "outer product ="<<outerProd<<std::endl;
-
-
-    // with Numeric differentiation, more dual quaternions
-    // constexpr int nbParam = 6*144;
-    // CostFunction* cost_function =
-    //       new NumericDiffCostFunction<NumericDiffPointToPlanePb, ceres::CENTRAL, 144 , nbParam>(
-    //       new NumericDiffPointToPlanePb(OuterShell.NBVertices(), OuterShell.Vertices(), OuterShell.Normales(), OuterShell.Matches()));
-    // problem.AddResidualBlock(cost_function, nullptr, &x[0]);
-
-    // with Numeric differentiation, more dual quaternions
-    // for (int i = 0; i < 144; ++i) {
-    //     // first viewpoint : dstcloud, fixed
-    //     // second viewpoint: srcCloud, moves
-    //     // nor is normal of dst
-    //    CostFunction* cost_function = new NumericDiffCostFunction<NumericDiffPointToPlanePbSingle, ceres::CENTRAL, 1 , 6>(
-    //        new NumericDiffPointToPlanePbSingle(OuterShell.NBVertices(), OuterShell.Vertices(), OuterShell.Normales(), OuterShell.Matches(),i));
-       
-    //    //ICPCostFunctions::PointToPlaneError_CeresAngleAxis::Create(dst[i],src[i],nor[i]);
-    //     problem.AddResidualBlock(cost_function, NULL, &x[6*i]);
-    // }
-    
-    // with Numeric differentiation, more dual quaternions
-    // for (int i = 0; i < 144; ++i) {
-    //     // first viewpoint : dstcloud, fixed
-    //     // second viewpoint: srcCloud, moves
-    //     // nor is normal of dst
-    //    CostFunction* cost_function = new NumericDiffCostFunction<NumericDiffPointToPlanePbSingleQuaternions, ceres::CENTRAL, 3 , 6>(
-    //        new NumericDiffPointToPlanePbSingleQuaternions(OuterShell.NBVertices(), OuterShell.Vertices(), OuterShell.Normales(), OuterShell.Matches(),i));
-       
-    //    //ICPCostFunctions::PointToPlaneError_CeresAngleAxis::Create(dst[i],src[i],nor[i]);
-    //     problem.AddResidualBlock(cost_function, NULL, &x[6*i]);
-    // }
-    
-
-
-
-
-    // constexpr int nbParam = 6*144;
-
-    // CostFunction* cost_function =
-    //       new NumericDiffCostFunction<NumericDiffPointToPlanePb, ceres::CENTRAL, 144 , nbParam>(
-    //       new NumericDiffPointToPlanePb(OuterShell.NBVertices(), OuterShell.Vertices(), OuterShell.Normales(), OuterShell.Matches()));
-    // problem.AddResidualBlock(cost_function, nullptr, &x[0]);
-
-
-
-    // with Automatic differentiation, more dual quaternions
-    // for (int i = 0; i < 144; ++i) {
-    //    CostFunction* cost_function = new ceres::AutoDiffCostFunction<AutoDiffPointToPlanePbSingleQuaternions<double>, 3, 6>(new AutoDiffPointToPlanePbSingleQuaternions<double>(OuterShell.NBVertices(), OuterShell.Vertices(), OuterShell.Normales(), OuterShell.Matches(),i));
-    //    problem.AddResidualBlock(cost_function, NULL, &x[6*i]);
-    // }
-
-
-
-    // return (new ceres::AutoDiffCostFunction<PointToPointError_CeresAngleAxis, 3, 6>(new PointToPointError_CeresAngleAxis(observed, worldPoint)));
-
+ 
     // with Autodiff and ONLY quaternions OOOKKK
     // for (int i = 0; i < 144; ++i) {
     //    CostFunction* cost_function = new ceres::AutoDiffCostFunction<AutoDiffPbSolving, 3, 6>(new AutoDiffPbSolving(OuterShell.NBVertices(), OuterShell.Vertices(), OuterShell.Normales(), OuterShell.Matches(),i));
@@ -195,22 +77,16 @@ int main( int argc, char **argv )
     // }
 
 
-    // with Autodiff and dualquaternions OOOKKK
-    for (int idxVer = 0; idxVer < OuterShell.NBVertices(); ++idxVer) {
+    // with Autodiff and dualquaternions 
+    for (int idxVer = 0; idxVer < scene.NBVertices(); ++idxVer) {
         // get the set of weights and indices associate
-       const int idxNode1 = OuterShell.Indices()[5*(idxVer)+0];
-       const int idxNode2 = OuterShell.Indices()[5*(idxVer)+1];
-       const int idxNode3 = OuterShell.Indices()[5*(idxVer)+2];
-       const int idxNode4 = OuterShell.Indices()[5*(idxVer)+3];
-       const int idxNode5 = OuterShell.Indices()[5*(idxVer)+4];
-       std::cout << "vertex num "<< idxVer << std::endl;
-       std::cout << "idxNode 1 =" << idxNode1 << std::endl;
-       std::cout << "idxNode 2 =" << idxNode2 << std::endl;
-       std::cout << "idxNode 3 =" << idxNode3 << std::endl;
-       std::cout << "idxNode 4 =" << idxNode4 << std::endl;
-       std::cout << "idxNode 5 =" << idxNode5 << std::endl;
+       const int idxNode1 = scene.Indices()[5*(idxVer)+0];
+       const int idxNode2 = scene.Indices()[5*(idxVer)+1];
+       const int idxNode3 = scene.Indices()[5*(idxVer)+2];
+       const int idxNode4 = scene.Indices()[5*(idxVer)+3];
+       const int idxNode5 = scene.Indices()[5*(idxVer)+4];
 
-       CostFunction* cost_function = new ceres::AutoDiffCostFunction<AutoDiffPbSolvingDualQuaternionsWithWeights, 3, 6, 6, 6, 6, 6>(new AutoDiffPbSolvingDualQuaternionsWithWeights(OuterShell.NBVertices(), OuterShell.Vertices(), OuterShell.Normales(), OuterShell.Matches(), OuterShell.Weights(), OuterShell.Indices(),idxVer));
+       CostFunction* cost_function = new ceres::AutoDiffCostFunction<AutoDiffPbSolvingDualQuaternionsWithWeights, 3, 6, 6, 6, 6, 6>(new AutoDiffPbSolvingDualQuaternionsWithWeights(scene.NBVertices(), scene.Vertices(), scene.Normales(), scene.Matches(), scene.Weights(), scene.Indices(),idxVer));
        problem.AddResidualBlock(cost_function, NULL, &x[6*idxNode1], &x[6*idxNode2], &x[6*idxNode3], &x[6*idxNode4], &x[6*idxNode5]);
     }
 
@@ -244,17 +120,17 @@ int main( int argc, char **argv )
     std::cout << "x6 : " << (initial_x[14]) << " -> " << x[14] << "\n";
     std::cout << "x7 : " << (initial_x[15]) << " -> " << x[15] << "\n";
 
-    Eigen::VectorXf residuWithourPerturbation(OuterShell.NBVertices());
+    Eigen::VectorXf residuWithourPerturbation(scene.NBVertices());
     std::cout << "before computing RMSE" << std::endl;
-    float totalErrorBefore = OuterShell.RMSE_with_update(residuWithourPerturbation);
+    float totalErrorBefore = scene.RMSE_with_update(residuWithourPerturbation);
 
     cout << "total error without perturbation is = "<<totalErrorBefore<<endl;
 
 
     // display the resulting
-    std::vector<DualQuaternion> resulting_Warps;
+    std::vector<DualQuaternionScalar<double>> resulting_Warps;
     for(unsigned int i=0;i<OuterShell.NBNodes();++i){
-        DualQuaternion currParameters = DualQuaternion(make_float3(x[6*i],x[6*i+1],x[6*i+2]),make_float3(x[6*i+3],x[6*i+4],x[6*i+5]));
+        DualQuaternionScalar<double> currParameters = DualQuaternionScalar<double>(make_Scalar3(x[6*i],x[6*i+1],x[6*i+2]),make_Scalar3(x[6*i+3],x[6*i+4],x[6*i+5]));
 
         resulting_Warps.push_back(currParameters);
     }
@@ -268,8 +144,8 @@ int main( int argc, char **argv )
     vector<double> errorResult;
     double totalError = 0.0;
 
-    Quaternion pointN = Quaternion(0.f, 0.f, 0.f, 0.f);
-    // loop over all 
+    QuaternionScalar<double> pointN = QuaternionScalar<double>(0., 0., 0., 0.);
+
     // VERSION WITH BLENDING
     for(unsigned int idx=0 ; idx< OuterShell.NBVertices(); ++idx){
         int indx_Depth = idx;

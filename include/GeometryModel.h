@@ -17,7 +17,7 @@ private:
 
     std::vector<double> _Weights; // weight is 1
     std::vector<int> _Indices; // map 
-    std::vector<DualQuaternion> _Warp;// set of nodes 
+    std::vector<DualQuaternionScalar<double> > _Warp;// set of nodes 
 
     std::vector<double> _Vertices;// all the vertices
     std::vector<double> _VMap; // target vertices 
@@ -66,8 +66,8 @@ public:
         for(unsigned int j=0 ; j<planarNumberOfWeights ; ++j){
 
             // Quaternion rotCurr = Quaternion(-sin(M_PI*i/(len*2.0))*sin(M_PI*j/len),cos(M_PI*i/(len*2.0))*sin(M_PI*j/len),sin(M_PI*i/(len*2.0))*cos(M_PI*j/len),cos(M_PI*i/(len*2.0))*cos(M_PI*j/len));
-            Quaternion rotCurr = Quaternion(-sin(M_PI*i/(planarNumberOfWeights*2.0))*sin(M_PI*j/planarNumberOfWeights),cos(M_PI*i/(planarNumberOfWeights*2.0))*sin(M_PI*j/planarNumberOfWeights),sin(M_PI*i/(planarNumberOfWeights*2.0))*cos(M_PI*j/planarNumberOfWeights),cos(M_PI*i/(planarNumberOfWeights*2.0))*cos(M_PI*j/planarNumberOfWeights));
-            DualQuaternion curr = DualQuaternion(rotCurr,make_float3(0.1f,0.1f,0.05f));
+            Quaternion rotCurr = QuaternionScalar<double>(-sin(M_PI*i/(planarNumberOfWeights*2.0))*sin(M_PI*j/planarNumberOfWeights),cos(M_PI*i/(planarNumberOfWeights*2.0))*sin(M_PI*j/planarNumberOfWeights),sin(M_PI*i/(planarNumberOfWeights*2.0))*cos(M_PI*j/planarNumberOfWeights),cos(M_PI*i/(planarNumberOfWeights*2.0))*cos(M_PI*j/planarNumberOfWeights));
+            DualQuaternion curr = DualQuaternionScalar<double>(rotCurr,make_Scalar3<double>(0.1,0.1,0.05));
 
             _Warp.push_back(curr);
 
@@ -82,10 +82,10 @@ public:
         for(unsigned int j=0 ; j<planarNumberOfVertices ; ++j){
 
             // Quaternion rotCurr = Quaternion(-sin(M_PI*i/(len*2.0))*sin(M_PI*j/len),cos(M_PI*i/(len*2.0))*sin(M_PI*j/len),sin(M_PI*i/(len*2.0))*cos(M_PI*j/len),cos(M_PI*i/(len*2.0))*cos(M_PI*j/len));
-            Quaternion rotCurr = Quaternion(-sin(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),sin(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices));
-            DualQuaternion curr = DualQuaternion(rotCurr,make_float3(0.1f,0.1f,0.05f));
+            QuaternionScalar<double> rotCurr = Quaternion(-sin(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),sin(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices));
+            DualQuaternionScalar<double> curr = DualQuaternion(rotCurr,make_float3(0.1f,0.1f,0.05f));
             // apply the transformation to the point (0,0,radius)
-            DualQuaternion vertexInput = DualQuaternion(make_float3(0.0f,0.0f,0.0f),Quaternion(radiusSphere,0.0f,0.0f,0.0f));
+            DualQuaternionScalar<double> vertexInput = DualQuaternion(make_float3(0.0f,0.0f,0.0f),Quaternion(radiusSphere,0.0f,0.0f,0.0f));
 
             // apply the transformation 
             vertexInput = curr * vertexInput * curr.DualConjugate2();
@@ -98,7 +98,7 @@ public:
                     DualQuaternion curr = _Warp[idxWarp];
 
                     // compute the transformed position that is, the associated position
-                    DualQuaternion nodeInput = DualQuaternion(make_float3(0.0f,0.0f,0.0f),Quaternion(radiusSphere,0.0f,0.0f,0.0f));
+                    DualQuaternion nodeInput = DualQuaternionScalar<double>(make_Scalar3<double>(0.0,0.0,0.0),QuaternionScalar<double>(radiusSphere,0.0,0.0,0.0));
                     // apply the transformation 
                     nodeInput = curr * nodeInput * curr.DualConjugate2();
 
@@ -146,11 +146,11 @@ public:
         for(unsigned int j=0 ; j<planarNumberOfVertices ; ++j){
 
             // Quaternion rotCurr = Quaternion(-sin(M_PI*i/(len*2.0))*sin(M_PI*j/len),cos(M_PI*i/(len*2.0))*sin(M_PI*j/len),sin(M_PI*i/(len*2.0))*cos(M_PI*j/len),cos(M_PI*i/(len*2.0))*cos(M_PI*j/len));
-            Quaternion rotCurr = Quaternion(-sin(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),sin(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices));
-            DualQuaternion curr = DualQuaternion(rotCurr,make_float3(0.1f,0.1f,0.05f));
+            Quaternion rotCurr = QuaternionScalar<double>(-sin(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),sin(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices));
+            DualQuaternion curr = DualQuaternionScalar<double>(rotCurr,make_float3(0.1f,0.1f,0.05f));
 
             // apply the transformation to the point (0,0,radius)
-            DualQuaternion vertexInput = DualQuaternion(make_float3(0.0f,0.0f,0.0f),Quaternion(radiusSphere,0.0f,0.0f,0.0f));
+            DualQuaternion vertexInput = DualQuaternionScalar<double>(make_Scalar3<double>(0.0f,0.0f,0.0f),QuaternionScalar<double>(radiusSphere,0.0f,0.0f,0.0f));
 
             // apply the transformation 
             vertexInput = curr * vertexInput * curr.DualConjugate2();
@@ -176,11 +176,11 @@ public:
 
     // init the weights ; 
     for(unsigned int i=0 ; i<_Nb_Vertices ; ++i){ 
-        _Weights.push_back(0.2f);
-        _Weights.push_back(0.2f);
-        _Weights.push_back(0.2f);
-        _Weights.push_back(0.2f); // \todo random 
-        _Weights.push_back(0.2f); 
+        _Weights.push_back(0.2);
+        _Weights.push_back(0.2);
+        _Weights.push_back(0.2);
+        _Weights.push_back(0.2); // \todo random 
+        _Weights.push_back(0.2); 
     }
 
 
@@ -212,7 +212,7 @@ public:
     inline std::vector<int> Indices() {return _Indices;}
 
 
-    inline std::vector<DualQuaternion> Warp() {return _Warp;}
+    inline std::vector<DualQuaternionScalar<double> > Warp() {return _Warp;}
 
     double RMSE_with_update(Eigen::VectorXd& residual);
 

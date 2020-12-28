@@ -13,8 +13,8 @@ double GeometryModel::RMSE_with_update(Eigen::VectorXd& residual) {
     float error = 0.0f;
     
     DualQuaternion Transfo, point;
-    Quaternion pointN = Quaternion(0.f, 0.f, 0.f, 0.f);
-    float3 vtx, nmle;
+    Quaternion pointN = QuaternionScalar<double>(0., 0., 0., 0.);
+    Scalar3<double> vtx, nmle;
     int2 pt;
     int indx_Depth;
     float dist, prod_scal;
@@ -28,20 +28,20 @@ double GeometryModel::RMSE_with_update(Eigen::VectorXd& residual) {
         indx_Depth = idx;
         // Warp each vertex with the current state of the warp field
         // Blend the transformations
-        Transfo = DualQuaternion(Quaternion(0.0,0.0,0.0,0.0), Quaternion(0.0,0.0,0.0,0.0));
+        Transfo = QuaternionScalar<double>(QuaternionScalar<double>(0.0,0.0,0.0,0.0), QuaternionScalar<double>(0.0,0.0,0.0,0.0));
         for (int v = 0; v < 5; v++) {
             Transfo = Transfo +  _Warp[_Indices[(idx)+v]]*_Weights[(idx)+v];
         }
         Transfo = Transfo.Normalize();
 
-        point = DualQuaternion(Quaternion(0.0,0.0,0.0,1.0), Quaternion(_Vertices[3*(idx)], _Vertices[3*(idx)+1], _Vertices[3*(idx)+2], 0.0f));
+        point = DualQuaternionScalar<double>(QuaternionScalar<double>(0.0,0.0,0.0,1.0), QuaternionScalar<double>(_Vertices[3*(idx)], _Vertices[3*(idx)+1], _Vertices[3*(idx)+2], 0.0f));
         point  = Transfo * point * Transfo.DualConjugate2();
         vtx = point.Dual().Vector();
         
         vertex3d.push_back(Point3f(vtx.x,vtx.y,vtx.z));
         tildeVertex3d.push_back(Point3f(_VMap[3*indx_Depth],_VMap[3*indx_Depth+1],_VMap[3*indx_Depth+2]));
 
-        pointN = Quaternion(_Normals[3*(idx)], _Normals[3*(idx)+1], _Normals[3*(idx)+2], 0.0f);
+        pointN = QuaternionScalar<double>(_Normals[3*(idx)], _Normals[3*(idx)+1], _Normals[3*(idx)+2], 0.0f);
         pointN  = Transfo.Real() * pointN * Transfo.Real().Conjugate();
         nmle = pointN.Vector();
         
@@ -58,7 +58,7 @@ double GeometryModel::RMSE_with_update(Eigen::VectorXd& residual) {
 
     
     // convert the transformed vertices
-    viz::Viz3d cloudPointsWindow("Dual quaternion good");
+    viz::Viz3d cloudPointsWindow("Dual quaternion in RMSE with Update");
 
     cloudPointsWindow.showWidget("coordinate", viz::WCoordinateSystem(10)); // default 100
     cloudPointsWindow.showWidget("pointsSphere", viz::WCloud(vertex3d, viz::Color::green()));
