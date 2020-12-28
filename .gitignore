@@ -30,3 +30,63 @@
 *.exe
 *.out
 *.app
+
+# meta
+Functions/*.exe
+Metaprogramming/*.hpp
+
+.gitignore
+
+build/*
+cmake-build-debug/*
+
+# LaTeX
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.pdf# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+
+.gitignore
+
+build/*
+cmake-build-debug/*
+
+# LaTeX
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.pdf
