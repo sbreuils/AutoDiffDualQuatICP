@@ -4,6 +4,22 @@
 #include <iostream>
 #include <math.h>
 
+/*** for opencv  ***/
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/viz.hpp>
+
+/*** Include files to manipulate matrices ***/
+#include <Eigen/Core>
+#include <Eigen/SVD>
+#include <Eigen/Cholesky>
+#include <Eigen/Geometry>
+#include <Eigen/LU>
+#include <Eigen/Sparse>
+
+using namespace std;
+
 template<class Scalar>
 struct Scalar3 {
         Scalar x;
@@ -295,7 +311,7 @@ struct QuaternionScalar {
 
 
 template<class Scalar>
-static Scalar3<Scalar> logOfQuaternion(Quaternion qi){
+static Scalar3<Scalar> logOfQuaternion(QuaternionScalar<Scalar> qi){
   Scalar3<Scalar> thetai;  
   const Scalar3<Scalar> q123 = qi.Vector();
   const Scalar sin_squared_theta = q123.x*q123.x + q123.y*q123.y + q123.z*q123.z;
@@ -345,7 +361,7 @@ struct DualQuaternionScalar {
         m_dual = (QuaternionScalar<Scalar>(t,(Scalar)0.0) * m_real) * (Scalar)0.5;
     }
     
-    DualQuaternionScalar(float3 r, float3 t) {
+    DualQuaternionScalar(Scalar3<Scalar> r, Scalar3<Scalar> t) {
         m_real = QuaternionScalar<Scalar>(r);
         m_dual = (QuaternionScalar<Scalar>(t,0.0) * m_real) * 0.5;
     }
@@ -363,9 +379,9 @@ struct DualQuaternionScalar {
     }
     
     // Inverse
-    DualQuaternionScalar Inv (DualQuaternion a) {
+    DualQuaternionScalar Inv (DualQuaternionScalar<Scalar> a) {
         if(a.m_real.Magnitude() == 0)
-            return DualQuaternion();
+            return DualQuaternionScalar<Scalar>();
 
         QuaternionScalar<Scalar> p_1 = InvQ(a.m_real);
         QuaternionScalar<Scalar> p_2 = a.m_dual * p_1;
@@ -406,7 +422,7 @@ struct DualQuaternionScalar {
     DualQuaternionScalar<Scalar> operator/ (DualQuaternionScalar<Scalar> b) {
         if(m_real.Magnitude() == 0.0f)
             return DualQuaternionScalar<Scalar>();
-        DualQuaternion c = Inv(b);
+        DualQuaternionScalar<Scalar> c = Inv(b);
         return DualQuaternionScalar<Scalar>(m_real*c.Real(), m_real*c.Dual() + m_dual*c.Real());
     }
     

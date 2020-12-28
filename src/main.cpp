@@ -1,6 +1,6 @@
 // #include "include/Utilities.h"
-#include "include/ceresUtilities.h"
 #include "include/DualQuaternion.h"
+#include "include/CeresFunctors.h"
 
 //using namespace glm;
 using namespace std;
@@ -129,7 +129,7 @@ int main( int argc, char **argv )
 
     // display the resulting
     std::vector<DualQuaternionScalar<double>> resulting_Warps;
-    for(unsigned int i=0;i<OuterShell.NBNodes();++i){
+    for(unsigned int i=0;i<scene.NBNodes();++i){
         DualQuaternionScalar<double> currParameters = DualQuaternionScalar<double>(make_Scalar3(x[6*i],x[6*i+1],x[6*i+2]),make_Scalar3(x[6*i+3],x[6*i+4],x[6*i+5]));
 
         resulting_Warps.push_back(currParameters);
@@ -147,32 +147,32 @@ int main( int argc, char **argv )
     QuaternionScalar<double> pointN = QuaternionScalar<double>(0., 0., 0., 0.);
 
     // VERSION WITH BLENDING
-    for(unsigned int idx=0 ; idx< OuterShell.NBVertices(); ++idx){
+    for(unsigned int idx=0 ; idx< scene.NBVertices(); ++idx){
         int indx_Depth = idx;
 
-        DualQuaternion point = DualQuaternion(Quaternion(0.0,0.0,0.0,1.0), Quaternion(OuterShell.Vertices()[3*(idx)], OuterShell.Vertices()[3*(idx)+1], OuterShell.Vertices()[3*(idx)+2], 0.0f));
+        DualQuaternion point = DualQuaternionScalar<double>(QuaternionScalar<double>(0.0,0.0,0.0,1.0), QuaternionScalar<double>(scene.Vertices()[3*(idx)], scene.Vertices()[3*(idx)+1], scene.Vertices()[3*(idx)+2], 0.0f));
 
-        DualQuaternion Transfo = DualQuaternion(Quaternion(0.0,0.0,0.0,0.0), Quaternion(0.0,0.0,0.0,0.0));
+        DualQuaternion Transfo = DualQuaternionScalar<double>(QuaternionScalar<double>(0.0,0.0,0.0,0.0), QuaternionScalar<double>(0.0,0.0,0.0,0.0));
         for(int v= 0; v<5; ++v){
-            Transfo = Transfo +  resulting_Warps[OuterShell.Indices()[5*(idx)+v]]*OuterShell.Weights()[5*(idx)+v];
+            Transfo = Transfo +  resulting_Warps[scene.Indices()[5*(idx)+v]]*scene.Weights()[5*(idx)+v];
         }
         Transfo = Transfo.Normalize();
 
         point  = Transfo * point * Transfo.DualConjugate2();
         vtx = point.Dual().Vector();
 
-        pointN = Quaternion(OuterShell.Normales()[3*(idx)], OuterShell.Normales()[3*(idx)+1], OuterShell.Normales()[3*(idx)+2], 0.0f);
+        pointN = Quaternion(scene.Normales()[3*(idx)], scene.Normales()[3*(idx)+1], scene.Normales()[3*(idx)+2], 0.0f);
         pointN  = Transfo.Real() * pointN * Transfo.Real().Conjugate();
         nmle = pointN.Vector();
 
 
         // compute the normal as well
-        float scalarProd = nmle.x*(vtx.x - OuterShell.Matches()[3*indx_Depth]) + nmle.y*(vtx.y - OuterShell.Matches()[3*indx_Depth+1]) + nmle.z*(vtx.z - OuterShell.Matches()[3*indx_Depth+2]);
+        double scalarProd = nmle.x*(vtx.x - scene.Matches()[3*indx_Depth]) + nmle.y*(vtx.y - scene.Matches()[3*indx_Depth+1]) + nmle.z*(vtx.z - scene.Matches()[3*indx_Depth+2]);
         totalError += std::abs(scalarProd);
         errorResult.push_back(totalError);
 
         resultVertex3d.push_back(Point3f(vtx.x,vtx.y,vtx.z));
-        tildeVertex3d.push_back(Point3f(OuterShell.Matches()[3*indx_Depth],OuterShell.Matches()[3*indx_Depth+1],OuterShell.Matches()[3*indx_Depth+2]));
+        tildeVertex3d.push_back(Point3f(scene.Matches()[3*indx_Depth],scene.Matches()[3*indx_Depth+1],scene.Matches()[3*indx_Depth+2]));
     }
 
 
