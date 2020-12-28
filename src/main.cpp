@@ -38,8 +38,6 @@ int main( int argc, char **argv )
 
     std::vector<double> x;
 
-    // std::cout << "main : 5th node = "<<std::endl;
-    // nodeParameters[5].Print();
 
     for(unsigned int i=0 ; i< nodeParameters.size() ; ++i){
         DualQuaternion currParameters = nodeParameters[i];
@@ -303,29 +301,6 @@ int main( int argc, char **argv )
 
 
 
-    // VERSION WITHOUT BLENDING
-    // for(unsigned int idx=0 ; idx<resulting_Warps.size() ; ++idx){
-    //     int indx_Depth = idx;
-
-    //     DualQuaternion Transfo = resulting_Warps[idx];
-
-    //     DualQuaternion point = DualQuaternion(Quaternion(0.0,0.0,0.0,1.0), Quaternion(OuterShell.Vertices()[3*(idx)], OuterShell.Vertices()[3*(idx)+1], OuterShell.Vertices()[3*(idx)+2], 0.0f));
-    //     point  = Transfo * point * Transfo.DualConjugate2();
-    //     vtx = point.Dual().Vector();
-
-    //     pointN = Quaternion(OuterShell.Normales()[3*(idx)], OuterShell.Normales()[3*(idx)+1], OuterShell.Normales()[3*(idx)+2], 0.0f);
-    //     pointN  = Transfo.Real() * pointN * Transfo.Real().Conjugate();
-    //     nmle = pointN.Vector();
-
-
-    //     // compute the normal as well
-    //     float scalarProd = nmle.x*(vtx.x - OuterShell.Matches()[3*indx_Depth]) + nmle.y*(vtx.y - OuterShell.Matches()[3*indx_Depth+1]) + nmle.z*(vtx.z - OuterShell.Matches()[3*indx_Depth+2]);
-    //     totalError += std::abs(scalarProd);
-    //     errorResult.push_back(totalError);
-
-    //     resultVertex3d.push_back(Point3f(vtx.x,vtx.y,vtx.z));
-    //     tildeVertex3d.push_back(Point3f(OuterShell.Matches()[3*indx_Depth],OuterShell.Matches()[3*indx_Depth+1],OuterShell.Matches()[3*indx_Depth+2]));
-    // }
 
     std::cout << "total resulting error is "<< totalError << std::endl;
 
@@ -343,30 +318,7 @@ int main( int argc, char **argv )
     cloudPointsWindowResult.spin();
 
 
-	// glutInit(&argc, argv) ;	
-	// glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
-	// glutInitWindowSize(width, height);
-	// window = glutCreateWindow("Tetra Fusion Minimal") ;
-	
-	// // if (Init() != 0)
-	// // 	return -1;
 
- //    glutReshapeFunc( reshapeWindow );
- //    glutDisplayFunc( renderScene );
- //    glutKeyboardFunc( handleKeyPress );
- //    setupScene();
- //    glutMainLoop();
-
-
-    // glutInit( &argc, argv );
-    // glutInitDisplayMode( GLUT_SINGLE | GLUT_RGB );
-    // glutInitWindowSize( width, height );
-    // glutCreateWindow( "Tetra Fusion Minimal" );
-    // glutReshapeFunc( reshapeWindow );
-    // glutDisplayFunc( renderScene );
-    // glutKeyboardFunc( handleKeyPress );
-    // setupScene();
-    // glutMainLoop();
 
 
 	return 0 ;
