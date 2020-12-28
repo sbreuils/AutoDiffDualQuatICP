@@ -79,7 +79,7 @@ cmake-build-debug/*
 *.app
 
 
-.gitignore
+*.DS_Store
 
 build/*
 cmake-build-debug/*

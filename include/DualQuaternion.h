@@ -304,19 +304,6 @@ static Scalar3<Scalar> logOfQuaternion(Quaternion qi){
   	const Scalar sin_theta = sqrt(sin_squared_theta);
   	const Scalar cos_theta = qi.Scalar();
 
-    // If cos_theta is negative, theta is greater than pi/2, which
-    // means that angle for the angle_axis vector which is 2 * theta
-    // would be greater than pi.
-    //
-    // While this will result in the correct rotation, it does not
-    // result in a normalized angle-axis vector.
-    //
-    // In that case we observe that 2 * theta ~ 2 * theta - 2 * pi,
-    // which is equivalent saying
-    //
-    //   theta - pi = atan(sin(theta - pi), cos(theta - pi))
-    //              = atan(-sin(theta), -cos(theta))
-    //
     const Scalar two_theta =
         (Scalar)2.0f * ((cos_theta < (0.0)) ? atan2(-sin_theta, -cos_theta)
                                        : atan2(sin_theta, cos_theta));
@@ -326,18 +313,12 @@ static Scalar3<Scalar> logOfQuaternion(Quaternion qi){
     thetai.y = q123.y * k;
     thetai.z = q123.z * k;
   }else{
-  	    // For zero rotation, sqrt() will produce NaN in the derivative since
-    // the argument is zero.  By approximating with a Taylor series,
-    // and truncating at one term, the value and first derivatives will be
-    // computed correctly when Jets are used.
+
     const Scalar k = (2.0f);
     thetai.x = q123.x * k;
     thetai.y = q123.y * k;
     thetai.z = q123.z * k;
   }
-
-
-
 
   return thetai;
 
