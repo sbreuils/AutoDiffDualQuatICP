@@ -76,7 +76,7 @@ struct AutoDiffPbSolvingDualQuaternionsWithWeights{
 
     Transfo = Transfo.Normalize();
 
-    point  = Transfo * point * Transfo.DualConjugate2();
+    DualQuaternionScalar<Q> transformedPoint  = Transfo * point * Transfo.DualConjugate2();
 
 
 
@@ -85,7 +85,7 @@ struct AutoDiffPbSolvingDualQuaternionsWithWeights{
 
     int indx_Depth=_idx;
     Q dist, prod_scal;
-    vtx = point.Dual().Vector();
+    vtx = transformedPoint.Dual().Vector();
 
         
     // pointN = QuaternionScalar<T>(_normal[3*(_idx)], _normal[3*(_idx)+1], _normal[3*(_idx)+2], 0.0f);
@@ -102,8 +102,8 @@ struct AutoDiffPbSolvingDualQuaternionsWithWeights{
     // error += fabs(dist);
     // tot_matches++;
     // residual(idx) = dist;//dist; STEPHANE
-    std::cout << "point  (" << _idx << ") = " << vtx.x << ", " << vtx.y << ", "<< vtx.z << "; "<< std::endl;
-    std::cout << "ptilde  (" << _idx << ") = " << _ptilde[3*_idx] << ", " << _ptilde[3*_idx+1] << ", "<< _ptilde[3*_idx+2] << "; "<< std::endl;
+    std::cout << "out point  (" << _idx << ") = " << vtx.x << "-> " << vtx.y << ", "<< vtx.z << ";; "<< std::endl;
+    std::cout << "ptilde  (" << _idx << ") = " << _ptilde[3*_idx] << "-> " << _ptilde[3*_idx+1] << ", "<< _ptilde[3*_idx+2] << "; "<< std::endl;
 
     residual[0] = (vtx.x - _ptilde[3*_idx]  );
     residual[1] = (vtx.y - _ptilde[3*_idx+1]);

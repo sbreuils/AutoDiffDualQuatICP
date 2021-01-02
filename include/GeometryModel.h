@@ -206,6 +206,12 @@ public:
                                                                                                    _Vertices[3 * (idx) + 1],
                                                                                                    _Vertices[3 * (idx) + 2], 0.0f));
         point = Transfo * point * Transfo.DualConjugate2();
+
+        // apply a perturbation
+        DualQuaternionScalar<double> transfoTarget =  DualQuaternionScalar<double>(make_Scalar3<double>(0.07f,0.0f,0.0f),make_Scalar3<double>(0.02,0.1,0.01)); // these are the transformations that has to be found in the computation of the Jacobian
+        point = transfoTarget * point * transfoTarget.DualConjugate2();
+
+
         Scalar3<double> vtx = point.Dual().Vector();
         _VMap.push_back(vtx.x);
         _VMap.push_back(vtx.y);

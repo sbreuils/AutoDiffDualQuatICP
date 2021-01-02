@@ -39,7 +39,7 @@ int main( int argc, char **argv )
 
     std::vector<double> x;
 
-
+    // extract the parameters
     for(unsigned int i=0 ; i< nodeParameters.size() ; ++i){
         DualQuaternionScalar<double> currParameters = nodeParameters[i];
 
@@ -53,32 +53,31 @@ int main( int argc, char **argv )
         x.push_back(trans.x);
         x.push_back(trans.y);
         x.push_back(trans.z);
-
     }
 
     
-    
+    // just a copy of the parameters
     std::vector<double> initial_x; 
-    std::copy(x.begin(),x.end(),std::back_inserter(initial_x)); //&x[0];
+    std::copy(x.begin(),x.end(),std::back_inserter(initial_x));
 
 
     Problem problem;
 
  
-    // with Autodiff and ONLY quaternions OOOKKK
+    // with Autodiff and ONLY quaternions
     // for (int i = 0; i < 144; ++i) {
     //    CostFunction* cost_function = new ceres::AutoDiffCostFunction<AutoDiffPbSolving, 3, 6>(new AutoDiffPbSolving(OuterShell.NBVertices(), OuterShell.Vertices(), OuterShell.Normales(), OuterShell.Matches(),i));
     //    problem.AddResidualBlock(cost_function, NULL, &x[6*i]);
     // }
 
-    // with Autodiff and  dualquaternions OOOKKK
+    // with Autodiff and  dualquaternions
     // for (int i = 0; i < 144; ++i) {
     //    CostFunction* cost_function = new ceres::AutoDiffCostFunction<AutoDiffPbSolvingDualQuaternions, 3, 6>(new AutoDiffPbSolvingDualQuaternions(OuterShell.NBVertices(), OuterShell.Vertices(), OuterShell.Normales(), OuterShell.Matches(),i));
     //    problem.AddResidualBlock(cost_function, NULL, &x[6*i]);
     // }
 
 
-    // with Autodiff and dualquaternions 
+    // with Autodiff, dualquaternions : init the cost function
     for (int idxVer = 0; idxVer < scene.NBVertices(); ++idxVer) {
         // get the set of weights and indices associate
        const int idxNode1 = scene.Indices()[5*(idxVer)+0];
@@ -98,32 +97,15 @@ int main( int argc, char **argv )
     options.minimizer_progress_to_stdout = true;
     options.max_num_iterations = 70;
     options.use_explicit_schur_complement=true;
-    
+
     Solver::Summary summary;
     Solve(options, &problem, &summary);
     std::cout << summary.BriefReport() << "\n";
-    std::cout << "x0 : " << (initial_x[0]) << " -> " << x[0] << "\n";
-    std::cout << "x1 : " << (initial_x[1]) << " -> " << x[1] << "\n";
-    std::cout << "x2 : " << (initial_x[2]) << " -> " << x[2] << "\n";
-    std::cout << "x3 : " << (initial_x[3]) << " -> " << x[3] << "\n";
-    std::cout << "x4 : " << (initial_x[4]) << " -> " << x[4] << "\n";
-    std::cout << "x5 : " << (initial_x[5]) << " -> " << x[5] << "\n";
-    std::cout << "x6 : " << (initial_x[6]) << " -> " << x[6] << "\n";
-    std::cout << "x7 : " << (initial_x[7]) << " -> " << x[7] << "\n";
 
-
-    std::cout << "x0 : " << (initial_x[8]) << " -> " << x[8] << "\n";
-    std::cout << "x1 : " << (initial_x[9]) << " -> " << x[9] << "\n";
-    std::cout << "x2 : " << (initial_x[10]) << " -> " << x[10] << "\n";
-    std::cout << "x3 : " << (initial_x[11]) << " -> " << x[11] << "\n";
-    std::cout << "x4 : " << (initial_x[12]) << " -> " << x[12] << "\n";
-    std::cout << "x5 : " << (initial_x[13]) << " -> " << x[13] << "\n";
-    std::cout << "x6 : " << (initial_x[14]) << " -> " << x[14] << "\n";
-    std::cout << "x7 : " << (initial_x[15]) << " -> " << x[15] << "\n";
 
     Eigen::VectorXd residuWithourPerturbation(scene.NBVertices());
     std::cout << "before computing RMSE" << std::endl;
-    float totalErrorBefore = scene.RMSE_with_update(residuWithourPerturbation);
+    double totalErrorBefore = scene.RMSE_with_update(residuWithourPerturbation);
 
     cout << "total error without perturbation is = "<<totalErrorBefore<<endl;
 
@@ -185,7 +167,7 @@ int main( int argc, char **argv )
     viz::Viz3d cloudPointsWindowResult("Dual quaternion better");
 
     cloudPointsWindowResult.showWidget("coordinate", viz::WCoordinateSystem(10)); // default 100
-    
+
 
     cloudPointsWindowResult.showWidget("pointsSphere", viz::WCloud(resultVertex3d, viz::Color::green()));
     cloudPointsWindowResult.setRenderingProperty( "pointsSphere", cv::viz::POINT_SIZE, 5.4 );

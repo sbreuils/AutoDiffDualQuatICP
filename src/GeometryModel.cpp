@@ -61,7 +61,7 @@ double GeometryModel::RMSE_with_update(Eigen::VectorXd& residual) {
     cloudPointsWindow.showWidget("coordinate", viz::WCoordinateSystem(10)); // default 100
 
     cloudPointsWindow.showWidget("pointsSphere", viz::WCloud(vertex3d, viz::Color::green()));
-//    cloudPointsWindow.setRenderingProperty( "pointsSphere", cv::viz::POINT_SIZE, 5.4 );
+    cloudPointsWindow.setRenderingProperty( "pointsSphere", cv::viz::POINT_SIZE, 7.4 );
     cloudPointsWindow.showWidget("pointsCylind", viz::WCloud(tildeVertex3d, viz::Color::red()));
     cloudPointsWindow.setRenderingProperty( "pointsCylind", cv::viz::POINT_SIZE, 5.4 );
 
