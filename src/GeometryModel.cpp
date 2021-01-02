@@ -46,7 +46,7 @@ double GeometryModel::RMSE_with_update(Eigen::VectorXd& residual) {
         //Compute depth difference at reprojection error (reject outliers, by using normals also)
         indx_Depth = idx;
         prod_scal = nmle.x*(vtx.x - _VMap[3*indx_Depth]) + nmle.y*(vtx.y - _VMap[3*indx_Depth+1]) + nmle.z*(vtx.z - _VMap[3*indx_Depth+2]);
-        dist = prod_scal; //*prod_scal;
+        dist = prod_scal;
 
 
         //Store correspondences into the matches array
@@ -59,8 +59,11 @@ double GeometryModel::RMSE_with_update(Eigen::VectorXd& residual) {
     viz::Viz3d cloudPointsWindow("Dual quaternion in RMSE with Update");
 
     cloudPointsWindow.showWidget("coordinate", viz::WCoordinateSystem(10)); // default 100
+
     cloudPointsWindow.showWidget("pointsSphere", viz::WCloud(vertex3d, viz::Color::green()));
+//    cloudPointsWindow.setRenderingProperty( "pointsSphere", cv::viz::POINT_SIZE, 5.4 );
     cloudPointsWindow.showWidget("pointsCylind", viz::WCloud(tildeVertex3d, viz::Color::red()));
+    cloudPointsWindow.setRenderingProperty( "pointsCylind", cv::viz::POINT_SIZE, 5.4 );
 
 
 

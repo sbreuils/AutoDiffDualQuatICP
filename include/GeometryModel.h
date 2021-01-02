@@ -69,7 +69,7 @@ public:
 
             // Quaternion rotCurr = Quaternion(-sin(M_PI*i/(len*2.0))*sin(M_PI*j/len),cos(M_PI*i/(len*2.0))*sin(M_PI*j/len),sin(M_PI*i/(len*2.0))*cos(M_PI*j/len),cos(M_PI*i/(len*2.0))*cos(M_PI*j/len));
             QuaternionScalar<double> rotCurr = QuaternionScalar<double>(-sin(M_PI*i/(planarNumberOfWeights*2.0))*sin(M_PI*j/planarNumberOfWeights),cos(M_PI*i/(planarNumberOfWeights*2.0))*sin(M_PI*j/planarNumberOfWeights),sin(M_PI*i/(planarNumberOfWeights*2.0))*cos(M_PI*j/planarNumberOfWeights),cos(M_PI*i/(planarNumberOfWeights*2.0))*cos(M_PI*j/planarNumberOfWeights));
-            DualQuaternionScalar<double> curr = DualQuaternionScalar<double>(rotCurr,make_Scalar3<double>(0.1,0.1,0.05));
+            DualQuaternionScalar<double> curr = DualQuaternionScalar<double>(rotCurr,make_Scalar3<double>(3.0,4.,2.0));
 
             _Warp.push_back(curr);
 
@@ -84,10 +84,12 @@ public:
         for(unsigned int j=0 ; j<planarNumberOfVertices ; ++j){
 
             // Quaternion rotCurr = Quaternion(-sin(M_PI*i/(len*2.0))*sin(M_PI*j/len),cos(M_PI*i/(len*2.0))*sin(M_PI*j/len),sin(M_PI*i/(len*2.0))*cos(M_PI*j/len),cos(M_PI*i/(len*2.0))*cos(M_PI*j/len));
+//            QuaternionScalar<double> rotCurr = QuaternionScalar<double>(-sin(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),sin(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices));
             QuaternionScalar<double> rotCurr = QuaternionScalar<double>(-sin(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),sin(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices));
-            DualQuaternionScalar<double> curr = DualQuaternionScalar<double>(rotCurr,make_Scalar3<double>(0.1f,0.1f,0.05f));
+
+            DualQuaternionScalar<double> curr = DualQuaternionScalar<double>(rotCurr,make_Scalar3<double>(3.0,4.0,2.0));
             // apply the transformation to the point (0,0,radius)
-            DualQuaternionScalar<double> vertexInput = DualQuaternionScalar<double>(make_Scalar3<double>(0.0f,0.0f,0.0f),QuaternionScalar<double>(radiusSphere,0.0f,0.0f,0.0f));
+            DualQuaternionScalar<double> vertexInput = DualQuaternionScalar<double>(make_Scalar3<double>(0.0,0.0,0.0),QuaternionScalar<double>(radiusSphere,0.0,0.0,0.0));
 
             // apply the transformation 
             vertexInput = curr * vertexInput * curr.DualConjugate2();
@@ -108,7 +110,7 @@ public:
                     Scalar3<double> currentnodePos = nodeInput.Dual().Vector();
                     Scalar3<double> currentVertexPos = vertexInput.Dual().Vector();
 
-                    float currentDistance = sqrtf((currentnodePos.x-currentVertexPos.x)*(currentnodePos.x-currentVertexPos.x) + 
+                    double currentDistance = sqrt((currentnodePos.x-currentVertexPos.x)*(currentnodePos.x-currentVertexPos.x) +
                                                   (currentnodePos.y-currentVertexPos.y)*(currentnodePos.y-currentVertexPos.y) +
                                                   (currentnodePos.z-currentVertexPos.z)*(currentnodePos.z-currentVertexPos.z));
 
@@ -139,37 +141,37 @@ public:
     std::cout << "the indices map is filled!, nb elements = "<<  _Indices.size() << std::endl;
 
     // let us display some indices for a vertex
-    
-
-    // init the dual quaternions corresponding to the target estimate or ptilde
-    // these dual quaternions are the base for the computation of the 
-    // Jacobian 
-    for(unsigned int i=0 ; i<planarNumberOfVertices ; ++i){
-        for(unsigned int j=0 ; j<planarNumberOfVertices ; ++j){
-
-            // Quaternion rotCurr = Quaternion(-sin(M_PI*i/(len*2.0))*sin(M_PI*j/len),cos(M_PI*i/(len*2.0))*sin(M_PI*j/len),sin(M_PI*i/(len*2.0))*cos(M_PI*j/len),cos(M_PI*i/(len*2.0))*cos(M_PI*j/len));
-            QuaternionScalar<double> rotCurr = QuaternionScalar<double>(-sin(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),sin(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices));
-            DualQuaternionScalar<double> curr = DualQuaternionScalar<double>(rotCurr,make_Scalar3<double>(0.1f,0.1f,0.05f));
-
-            // apply the transformation to the point (0,0,radius)
-            DualQuaternionScalar<double> vertexInput = DualQuaternionScalar<double>(make_Scalar3<double>(0.0f,0.0f,0.0f),QuaternionScalar<double>(radiusSphere,0.0f,0.0f,0.0f));
-
-            // apply the transformation 
-            vertexInput = curr * vertexInput * curr.DualConjugate2();
-
-            // place the target the transformation
-            // DualQuaternion transfoTarget =  DualQuaternion(make_float3(0.07f,0.0f,0.0f),Quaternion(0.01f,0.1f,0.01f,0.0f)); // these are the transformations that has to be found in the computation of the Jacobian
-            // vertexInput = transfoTarget * vertexInput * transfoTarget.DualConjugate2();
 
 
-            // float3 vertexOut = vertexInput.Dual().Vector(); 
-            _VMap.push_back(vertexInput.Dual().Vector().x);
-            _VMap.push_back(vertexInput.Dual().Vector().y);
-            _VMap.push_back(vertexInput.Dual().Vector().z);
 
 
-        }
-    }
+    //    for(unsigned int i=0 ; i<planarNumberOfVertices ; ++i){
+//        for(unsigned int j=0 ; j<planarNumberOfVertices ; ++j){
+//
+//            // Quaternion rotCurr = Quaternion(-sin(M_PI*i/(len*2.0))*sin(M_PI*j/len),cos(M_PI*i/(len*2.0))*sin(M_PI*j/len),sin(M_PI*i/(len*2.0))*cos(M_PI*j/len),cos(M_PI*i/(len*2.0))*cos(M_PI*j/len));
+//            QuaternionScalar<double> rotCurr = QuaternionScalar<double>(-sin(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*sin(M_PI*j/planarNumberOfVertices),sin(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices),cos(M_PI*i/(planarNumberOfVertices*2.0))*cos(M_PI*j/planarNumberOfVertices));
+//            DualQuaternionScalar<double> curr = DualQuaternionScalar<double>(rotCurr,make_Scalar3<double>(3.0,4.,2.0));
+//
+//            // apply the transformation to the point (0,0,radius)
+//            DualQuaternionScalar<double> vertexInput = DualQuaternionScalar<double>(make_Scalar3<double>(0.0f,0.0f,0.0f),QuaternionScalar<double>(radiusSphere,0.0f,0.0f,0.0f));
+//
+//            // apply the transformation
+//            vertexInput = curr * vertexInput * curr.DualConjugate2();
+//
+//            // place the target the transformation
+//             DualQuaternionScalar<double> transfoTarget =  DualQuaternionScalar<double>(make_Scalar3<double>(0.07f,0.0f,0.0f),make_Scalar3<double>(0.02,0.1,0.01)); // these are the transformations that has to be found in the computation of the Jacobian
+//             vertexInput = transfoTarget * vertexInput * transfoTarget.DualConjugate2();
+//
+//
+//            // float3 vertexOut = vertexInput.Dual().Vector();
+//            _VMap.push_back(vertexInput.Dual().Vector().x);
+//            _VMap.push_back(vertexInput.Dual().Vector().y);
+//            _VMap.push_back(vertexInput.Dual().Vector().z);
+//
+//
+//        }
+//    }
+
 
     // let us now look for the nearest weights wi
     std::default_random_engine generator(seed);
@@ -185,6 +187,30 @@ public:
         _Weights.push_back(0.2); 
     }
 
+
+    // init the dual quaternions corresponding to the target estimate or ptilde
+    // these dual quaternions are the base for the computation of the
+    // Jacobian
+    for (int idx = 0; idx < _Nb_Vertices; idx++) {
+        // Warp each vertex with the current state of the warp field
+        // Blend the transformations
+        DualQuaternionScalar<double> Transfo = DualQuaternionScalar<double>(QuaternionScalar<double>(0.0, 0.0, 0.0, 0.0),
+                                                                            QuaternionScalar<double>(0.0, 0.0, 0.0, 0.0));
+        for (int v = 0; v < 5; v++) {
+            Transfo = Transfo + _Warp[_Indices[(idx) + v]] * _Weights[(idx) + v];
+        }
+        Transfo = Transfo.Normalize();
+
+        DualQuaternionScalar<double> point = DualQuaternionScalar<double>(QuaternionScalar<double>(0.0, 0.0, 0.0, 1.0),
+                                                                          QuaternionScalar<double>(_Vertices[3 * (idx)],
+                                                                                                   _Vertices[3 * (idx) + 1],
+                                                                                                   _Vertices[3 * (idx) + 2], 0.0f));
+        point = Transfo * point * Transfo.DualConjugate2();
+        Scalar3<double> vtx = point.Dual().Vector();
+        _VMap.push_back(vtx.x);
+        _VMap.push_back(vtx.y);
+        _VMap.push_back(vtx.z);
+    }
 
 
 
