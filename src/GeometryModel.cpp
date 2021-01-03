@@ -45,7 +45,8 @@ double GeometryModel::RMSE_with_update(Eigen::VectorXd& residual) {
 
         //Compute depth difference at reprojection error (reject outliers, by using normals also)
         indx_Depth = idx;
-        prod_scal = nmle.x*(vtx.x - _VMap[3*indx_Depth]) + nmle.y*(vtx.y - _VMap[3*indx_Depth+1]) + nmle.z*(vtx.z - _VMap[3*indx_Depth+2]);
+//        prod_scal = nmle.x*(vtx.x - _VMap[3*indx_Depth]) + nmle.y*(vtx.y - _VMap[3*indx_Depth+1]) + nmle.z*(vtx.z - _VMap[3*indx_Depth+2]);
+        prod_scal = (vtx.x - _VMap[3*indx_Depth]) + (vtx.y - _VMap[3*indx_Depth+1]) + (vtx.z - _VMap[3*indx_Depth+2]);
         dist = prod_scal;
 
 

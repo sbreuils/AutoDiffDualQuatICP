@@ -44,15 +44,15 @@ int main( int argc, char **argv )
         DualQuaternionScalar<double> currParameters = nodeParameters[i];
 
         Scalar3<double> thetaEul = logOfQuaternion(currParameters.Real());
-        Scalar3<double> trans = currParameters.GetTranslation();
+        Scalar3<double> translation = currParameters.GetTranslation();
 
         x.push_back(thetaEul.x);
         x.push_back(thetaEul.y);
         x.push_back(thetaEul.z);
 
-        x.push_back(trans.x);
-        x.push_back(trans.y);
-        x.push_back(trans.z);
+        x.push_back(translation.x);
+        x.push_back(translation.y);
+        x.push_back(translation.z);
     }
 
     
@@ -77,6 +77,7 @@ int main( int argc, char **argv )
     // }
 
 
+#if 0
     // with Autodiff, dualquaternions : init the cost function
     for (int idxVer = 0; idxVer < scene.NBVertices(); ++idxVer) {
         // get the set of weights and indices associate
@@ -89,14 +90,18 @@ int main( int argc, char **argv )
        CostFunction* cost_function = new ceres::AutoDiffCostFunction<AutoDiffPbSolvingDualQuaternionsWithWeights, 3, 6, 6, 6, 6, 6>(new AutoDiffPbSolvingDualQuaternionsWithWeights(scene.NBVertices(), scene.Vertices(), scene.Normales(), scene.Matches(), scene.Weights(), scene.Indices(),idxVer));
        problem.AddResidualBlock(cost_function, NULL, &x[6*idxNode1], &x[6*idxNode2], &x[6*idxNode3], &x[6*idxNode4], &x[6*idxNode5]);
     }
-
-
+#endif
+    double x_analytic = 0.5;
+    const double initial_x_analytic = x_analytic;
+    CostFunction* cost_function = new QuadraticCostFunction;
+    problem.AddResidualBlock(cost_function, NULL, &x_analytic);
 
     // Run the solver!
     Solver::Options options;
     options.minimizer_progress_to_stdout = true;
     options.max_num_iterations = 70;
     options.use_explicit_schur_complement=true;
+    options.linear_solver_type = ceres::DENSE_SCHUR;
 
     Solver::Summary summary;
     Solve(options, &problem, &summary);

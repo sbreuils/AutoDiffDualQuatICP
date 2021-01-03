@@ -41,7 +41,7 @@ public:
 	GeometryModel() { 
         const float radiusSphere = 2.0;
         planarNumberOfWeights = 12;
-        planarNumberOfVertices = 20;        
+        planarNumberOfVertices = 15;
         _Nb_Vertices = planarNumberOfVertices*planarNumberOfVertices;
         _Nb_Weights = planarNumberOfWeights*planarNumberOfWeights;
         _Nb_Warps =planarNumberOfVertices*planarNumberOfVertices;
