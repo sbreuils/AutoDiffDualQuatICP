@@ -31,7 +31,7 @@ add_executable(dualQuatIcpAuto
     src/GeometryModel.cpp
     include/GeometryModel.h
     include/DualQuaternion.h
-)
+        include/AnalyticalJacobian.h)
 
 target_link_libraries(dualQuatIcpAuto
     ${OpenCV_LIBS}
